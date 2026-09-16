@@ -1,0 +1,23 @@
+# Next.js build output (will be rebuilt inside Docker)
+.next/
+out/
+
+# Dependencies (will be installed inside Docker)
+node_modules/
+
+# Environment files (never bake secrets into image)
+.env
+.env.*
+!.env.example
+
+# Development
+*.log
+npm-debug.log*
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/

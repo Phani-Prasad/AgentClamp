@@ -1,0 +1,42 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Development databases (will use Docker volumes instead)
+*.db
+*.sqlite
+*.sqlite3
+
+# ChromaDB local data (will use Docker volumes instead)
+chroma_db/
+
+# Output files
+output/
+
+# Environment files (never bake secrets into image)
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Tests
+tests/
+scratch/
