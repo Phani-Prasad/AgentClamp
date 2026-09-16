@@ -223,6 +223,12 @@ const GLOBAL_CSS = `
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255,255,255,0.06);
   }
+  .lp-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 36px;
+  }
 
   /* Hero Section spacing */
   .lp-hero-section {
@@ -382,6 +388,7 @@ const GLOBAL_CSS = `
     .lp-section { padding: 14px 16px !important; }
     .lp-hero-section { padding-top: 100px !important; padding-bottom: 8px !important; }
     .lp-nav-container { padding: 10px 16px !important; }
+    .lp-nav-actions { margin-right: 0 !important; }
     .lp-step-grid { grid-template-columns: 1fr !important; }
     .lp-hero-h1,
     .lp-h2 { font-size: 1.3rem !important; letter-spacing: -0.5px !important; line-height: 1.25 !important; }
@@ -933,7 +940,7 @@ export default function LandingPage() {
                 <button key={id} className="lp-nav-link" onClick={() => go(id)}>{l}</button>
               ))}
             </nav>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="lp-nav-actions">
               <button onClick={() => setAuthModal('login')} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: '8px 12px', transition: 'color 0.2s', fontFamily: 'inherit' }} onMouseEnter={e => e.currentTarget.style.color='#fff'} onMouseLeave={e => e.currentTarget.style.color='#9ca3af'}>Sign In</button>
               <button className="lp-btn-primary" onClick={() => setAuthModal('signup')} style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: 10 }}>Get Started →</button>
             </div>
