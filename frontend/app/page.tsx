@@ -291,8 +291,8 @@ const GLOBAL_CSS = `
 
   /* Footer link */
   .lp-footer-link {
-    color: #4b5563; text-decoration: none; font-size: 0.85rem;
-    transition: color 0.2s; display: block; line-height: 2.2;
+    color: #6b7280; text-decoration: none; font-size: 0.82rem;
+    transition: color 0.2s; display: block; line-height: 1.8;
   }
   .lp-footer-link:hover { color: #f97316; }
 
@@ -383,7 +383,8 @@ const GLOBAL_CSS = `
     .lp-mock-body { grid-template-columns: 1fr !important; }
     .lp-mock-sidebar { display: none !important; }
     .lp-hide-mobile { display: none !important; }
-    .lp-footer-grid { grid-template-columns: 1fr 1fr !important; }
+    .lp-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 20px 16px !important; }
+    .lp-footer-brand { grid-column: 1 / -1 !important; margin-bottom: 6px !important; }
     .lp-cta-card { padding: 32px 20px !important; }
   }
 
@@ -403,7 +404,11 @@ const GLOBAL_CSS = `
     .lp-stat-pill-row { flex-direction: column !important; align-items: stretch !important; }
     .lp-stat-pill { width: 100% !important; justify-content: center !important; }
     .lp-mock-metrics { grid-template-columns: repeat(2, 1fr) !important; }
-    .lp-footer-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .lp-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 16px 12px !important; margin-bottom: 16px !important; }
+    .lp-footer-brand { grid-column: 1 / -1 !important; margin-bottom: 4px !important; }
+    .lp-footer-col-wide { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0 12px !important; }
+    .lp-footer-col-wide > div:first-child { grid-column: 1 / -1 !important; }
+    .lp-footer-link { font-size: 0.76rem !important; line-height: 1.6 !important; }
     .lp-card { padding: 16px 14px !important; }
     .lp-cta-card { padding: 24px 14px !important; border-radius: 18px !important; }
     .lp-modal-card { width: 92vw !important; padding: 24px 18px !important; }
@@ -1309,37 +1314,37 @@ export default function LandingPage() {
         {/* ── FOOTER ───────────────────────────────────────────────────*/}
         <footer style={{ position: 'relative', zIndex: 5, borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }}>
           <div className="lp-section" style={{ paddingTop: 28, paddingBottom: 20 }}>
-            <div className="lp-footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 24, marginBottom: 24 }}>
-              <div>
+            <div className="lp-footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 24, marginBottom: 20 }}>
+              <div className="lp-footer-brand">
                 <Logo size={28} />
-                <p style={{ fontSize: '0.85rem', color: '#374151', lineHeight: 1.75, marginTop: 16, maxWidth: 260 }}>The enterprise-grade AI agent governance platform. Trusted by security-conscious teams worldwide.</p>
-                <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                <p style={{ fontSize: '0.82rem', color: '#6b7280', lineHeight: 1.6, marginTop: 12, maxWidth: 280 }}>The enterprise-grade AI agent governance platform. Trusted by security-conscious teams worldwide.</p>
+                <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                   {[
-                    <MessageSquare key="tw" size={16} color="#9ca3af" />,
-                    <Globe key="li" size={16} color="#9ca3af" />,
-                    <Code key="gh" size={16} color="#9ca3af" />,
-                    <BookOpen key="bk" size={16} color="#9ca3af" />
+                    <MessageSquare key="tw" size={15} color="#9ca3af" />,
+                    <Globe key="li" size={15} color="#9ca3af" />,
+                    <Code key="gh" size={15} color="#9ca3af" />,
+                    <BookOpen key="bk" size={15} color="#9ca3af" />
                   ].map((icon, i) => (
-                    <div key={i} style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.2s' }}>{icon}</div>
+                    <div key={i} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.2s' }}>{icon}</div>
                   ))}
                 </div>
               </div>
               {[
-                { title:'Platform',   links:['Dashboard','Orchestrator','Agents','Providers','Traces','Knowledge Base'] },
-                { title:'Governance', links:['Policy Engine','Guardrails','Inbox','Audit Logs','Compliance','Reports'] },
-                { title:'Company',    links:['About','Blog','Careers','Documentation','Status','Contact'] },
-              ].map(({ title, links }) => (
-                <div key={title}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 14 }}>{title}</div>
+                { title:'Platform',   cls:'', links:['Dashboard','Orchestrator','Agents','Providers','Traces','Knowledge Base'] },
+                { title:'Governance', cls:'', links:['Policy Engine','Guardrails','Inbox','Audit Logs','Compliance','Reports'] },
+                { title:'Company',    cls:'lp-footer-col-wide', links:['About','Blog','Careers','Documentation','Status','Contact'] },
+              ].map(({ title, cls, links }) => (
+                <div key={title} className={cls}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 10 }}>{title}</div>
                   {links.map(l => <a key={l} href="#" className="lp-footer-link">{l}</a>)}
                 </div>
               ))}
             </div>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-              <span style={{ fontSize: '0.78rem', color: '#1f2937' }}>© 2026 AgentClamp Platform. All rights reserved.</span>
-              <div style={{ display: 'flex', gap: 20 }}>
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>© 2026 AgentClamp Platform. All rights reserved.</span>
+              <div style={{ display: 'flex', gap: 16 }}>
                 {['Privacy Policy','Terms of Service','Security'].map(l => (
-                  <a key={l} href="#" style={{ fontSize: '0.78rem', color: '#1f2937', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#9ca3af'} onMouseLeave={e => e.currentTarget.style.color='#1f2937'}>{l}</a>
+                  <a key={l} href="#" style={{ fontSize: '0.75rem', color: '#4b5563', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#9ca3af'} onMouseLeave={e => e.currentTarget.style.color='#4b5563'}>{l}</a>
                 ))}
               </div>
             </div>
