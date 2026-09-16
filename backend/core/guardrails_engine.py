@@ -7,9 +7,11 @@ import os
 import re
 import base64
 from typing import List, Dict, Any, Optional
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from presidio_anonymizer.entities import OperatorConfig
+
+# Presidio is imported lazily inside GuardrailsEngine.__init__ to avoid
+# loading heavy NLP models at startup (saves ~200MB RAM on constrained hosts).
+_presidio_analyzer = None
+_presidio_anonymizer = None
 
 def normalize_leetspeak(t: str) -> str:
     """Standardizes homoglyphs and leetspeak substitutions to standard characters."""
@@ -80,9 +82,21 @@ def decode_rot13(s: str) -> str:
             res.append(c)
     return "".join(res)
 
-# Initialize Presidio (PII Detection)
-_analyzer = AnalyzerEngine()
-_anonymizer = AnonymizerEngine()
+# Presidio engines — lazy-loaded on first PII call to avoid loading
+# heavy spaCy NLP models at startup (saves ~200-300MB RAM).
+_analyzer = None
+_anonymizer = None
+
+def _get_presidio():
+    """Lazily load Presidio engines on first use."""
+    global _analyzer, _anonymizer
+    if _analyzer is None:
+        from presidio_analyzer import AnalyzerEngine
+        from presidio_anonymizer import AnonymizerEngine
+        _analyzer = AnalyzerEngine()
+        _anonymizer = AnonymizerEngine()
+    return _analyzer, _anonymizer
+
 
 class GuardrailsEngine:
     def __init__(self, config: Optional[Dict[str, Any]] = None):
@@ -273,8 +287,10 @@ class GuardrailsEngine:
         # 1. PII Detection (Anonymize)
         if self.pii_enabled:
             try:
-                results = _analyzer.analyze(text=processed_text, language='en')
-                anonymized_result = _anonymizer.anonymize(
+                from presidio_anonymizer.entities import OperatorConfig
+                analyzer, anonymizer = _get_presidio()
+                results = analyzer.analyze(text=processed_text, language='en')
+                anonymized_result = anonymizer.anonymize(
                     text=processed_text,
                     analyzer_results=results,
                     operators={
