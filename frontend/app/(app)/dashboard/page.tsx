@@ -276,13 +276,13 @@ export default function Dashboard() {
 
               {/* 2. Middle Column: Stacks / Gates */}
               <div className="flow-node-circle absolute flex items-center justify-center" style={{ left: 450, top: 50, borderColor: 'var(--accent-primary)', boxShadow: '0 0 15px rgba(249, 115, 22, 0.35)' }}>
-                <Brain size={20} color="var(--accent-primary)" title="Thought Engine" />
+                <Brain size={20} color="var(--accent-primary)" aria-label="Thought Engine" />
               </div>
               <div className="flow-node-circle absolute flex items-center justify-center" style={{ left: 450, top: 160, borderColor: '#38bdf8', boxShadow: '0 0 15px rgba(56, 189, 248, 0.35)' }}>
-                <Zap size={20} color="#38bdf8" title="Tool Guardrails" />
+                <Zap size={20} color="#38bdf8" aria-label="Tool Guardrails" />
               </div>
               <div className="flow-node-circle absolute flex items-center justify-center" style={{ left: 450, top: 270, borderColor: '#a78bfa', boxShadow: '0 0 15px rgba(167, 139, 250, 0.35)' }}>
-                <BookOpen size={20} color="#a78bfa" title="Vector Retriever" />
+                <BookOpen size={20} color="#a78bfa" aria-label="Vector Retriever" />
               </div>
 
               {/* 3. Right Column Top: Agent B Card */}
