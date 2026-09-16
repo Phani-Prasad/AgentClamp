@@ -189,3 +189,66 @@ class AuditLog(Base):
     resource_id = Column(String)
     details    = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ── EU AI Act Risk Classification (per Agent) ─────────────────
+
+class AgentRiskClassification(Base):
+    """
+    Stores the EU AI Act risk tier classification for each agent.
+    Risk Tiers: unacceptable | high | limited | minimal
+    """
+    __tablename__ = "agent_risk_classifications"
+
+    id              = Column(String, primary_key=True, default=_uuid)
+    agent_id        = Column(String, ForeignKey("agents.id", ondelete="CASCADE"), nullable=False, unique=True)
+
+    # EU AI Act Risk Tier
+    risk_tier       = Column(String(20), default="minimal")  # unacceptable|high|limited|minimal
+    rationale       = Column(Text, default="")               # Explanation of classification
+    use_case        = Column(String(255), default="")        # e.g. "Customer support chatbot"
+    sector          = Column(String(100), default="")        # e.g. "Finance", "Healthcare", "HR"
+
+    # Mandatory controls checklist (JSON booleans)
+    controls        = Column(JSON, default=dict)
+    # {
+    #   "human_oversight": False,      # Art. 14 - Human Oversight
+    #   "logging_traceability": False, # Art. 12 - Logging & Traceability
+    #   "transparency": False,         # Art. 13 - Transparency
+    #   "accuracy_robustness": False,  # Art. 15 - Accuracy & Robustness
+    #   "data_governance": False,      # Art. 10 - Data & Data Governance
+    # }
+
+    classified_by   = Column(String(255), default="auto")    # "auto" or user email
+    created_at      = Column(DateTime, default=datetime.utcnow)
+    updated_at      = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship
+    agent           = relationship("Agent", foreign_keys=[agent_id])
+
+
+# ── Compliance Assessment (Point-in-Time Audit) ───────────────
+
+class ComplianceAssessment(Base):
+    """
+    Stores point-in-time compliance audit results mapped to
+    NIST AI RMF, ISO 42001, ISO 23894, and EU AI Act controls.
+    """
+    __tablename__ = "compliance_assessments"
+
+    id              = Column(String, primary_key=True, default=_uuid)
+    framework       = Column(String(50), nullable=False)  # nist_ai_rmf|iso_42001|iso_23894|eu_ai_act
+    overall_score   = Column(Float, default=0.0)          # 0.0 - 100.0 readiness score
+    controls_total  = Column(Integer, default=0)
+    controls_passed = Column(Integer, default=0)
+
+    # Detailed control results (JSON array of control objects)
+    control_results = Column(JSON, default=list)
+    # [{ "id": "GOVERN-1.1", "title": "...", "status": "pass|fail|partial", "evidence": "..." }]
+
+    findings        = Column(Text, default="")            # Summary of key findings
+    recommendations = Column(Text, default="")            # Remediation recommendations
+    assessed_by     = Column(String(255), default="auto")
+
+    created_at      = Column(DateTime, default=datetime.utcnow)
+

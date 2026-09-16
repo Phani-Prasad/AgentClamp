@@ -15,7 +15,8 @@ import {
   ShieldCheck, 
   Cpu, 
   FlaskConical,
-  Sliders
+  Sliders,
+  Scale
 } from 'lucide-react'
 
 const NAV = [
@@ -35,6 +36,7 @@ const NAV = [
     { href: '/governance/policy-builder', icon: <Sliders size={18} color="#a78bfa" />,    label: 'Policy Builder' },
     { href: '/providers',                 icon: <Cpu size={18} color="#06b6d4" />,        label: 'Providers' },
     { href: '/eval-playground',           icon: <FlaskConical size={18} color="#f43f5e" />, label: 'Eval Playground' },
+    { href: '/compliance',                icon: <Scale size={18} color="#6366f1" />,       label: 'Compliance Hub' },
   ]},
 ]
 

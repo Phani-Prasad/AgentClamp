@@ -63,6 +63,7 @@ from api.websocket import router as r5
 from api.analytics import router as r6
 from api.governance import router as r7
 from api.auth import router as r8
+from api.compliance import router as r9
 
 app.include_router(r1, prefix="/api/v1")
 app.include_router(r2, prefix="/api/v1")
@@ -71,6 +72,7 @@ app.include_router(r4, prefix="/api/v1")
 app.include_router(r6, prefix="/api/v1")
 app.include_router(r7, prefix="/api/v1")
 app.include_router(r8, prefix="/api/v1")
+app.include_router(r9, prefix="/api/v1")
 app.include_router(r5)
 
 print("[Router] All routers loaded successfully")

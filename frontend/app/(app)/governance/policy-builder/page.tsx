@@ -71,7 +71,7 @@ export default function PolicyBuilderPage() {
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState<any>(EMPTY_FORM)
 
-  // Test sandbox state
+  // Rule simulation & dry run state
   const [testText, setTestText] = useState('')
   const [testCost, setTestCost] = useState('')
   const [testResult, setTestResult] = useState<any>(null)
@@ -449,7 +449,7 @@ export default function PolicyBuilderPage() {
               </button>
             </div>
 
-            {/* ── Test Sandbox ─────────────────────────────────── */}
+            {/* ── Test & Dry Run Policy ────────────────────────── */}
             <div style={{ background: 'var(--surface-2)', borderRadius: 10, padding: 16, border: '1px solid var(--border)' }}>
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <FlaskConical size={15} color="var(--accent-primary)" /> Test This Rule (Dry Run)

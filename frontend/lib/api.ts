@@ -30,6 +30,11 @@ async function apiFetch(path: string, options?: RequestInit) {
 
 // ── Agents ──────────────────────────────────────────────────
 export const api = {
+  auth: {
+    login: (data: unknown) => apiFetch('/api/v1/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    signup: (data: unknown) => apiFetch('/api/v1/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+    me: () => apiFetch('/api/v1/auth/me'),
+  },
   agents: {
     list: ()                  => apiFetch('/api/v1/agents/'),
     create: (data: unknown)   => apiFetch('/api/v1/agents/', { method: 'POST', body: JSON.stringify(data) }),
@@ -93,6 +98,14 @@ export const api = {
       hallucination_threshold?: number
       bias_threshold?: number
     }) => apiFetch('/v1/orgs/me/evaluate', { method: 'POST', body: JSON.stringify(data) }),
+  },
+  compliance: {
+    dashboard: ()                          => apiFetch('/api/v1/compliance/dashboard'),
+    frameworks: ()                         => apiFetch('/api/v1/compliance/frameworks'),
+    report: ()                             => apiFetch('/api/v1/compliance/report'),
+    classifyAgent: (data: unknown)         => apiFetch('/api/v1/compliance/classify-agent', { method: 'POST', body: JSON.stringify(data) }),
+    getClassification: (agentId: string)   => apiFetch(`/api/v1/compliance/agents/${agentId}/classification`),
+    updateControls: (agentId: string, data: unknown) => apiFetch(`/api/v1/compliance/agents/${agentId}/controls`, { method: 'PATCH', body: JSON.stringify(data) }),
   },
 }
 
