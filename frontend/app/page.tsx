@@ -228,6 +228,8 @@ const GLOBAL_CSS = `
     align-items: center;
     gap: 10px;
     margin-right: 36px;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   /* Hero Section spacing */
@@ -373,6 +375,7 @@ const GLOBAL_CSS = `
   @media (max-width: 992px) {
     .lp-section { padding: 18px 20px !important; }
     .lp-hero-section { padding-top: 115px !important; padding-bottom: 8px !important; }
+    .lp-nav-actions { margin-right: 12px !important; gap: 8px !important; }
     .lp-two-col { grid-template-columns: 1fr !important; gap: 24px !important; }
     .lp-step-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; }
     .lp-step-line { display: none !important; }
@@ -387,8 +390,10 @@ const GLOBAL_CSS = `
   @media (max-width: 640px) {
     .lp-section { padding: 14px 16px !important; }
     .lp-hero-section { padding-top: 100px !important; padding-bottom: 8px !important; }
-    .lp-nav-container { padding: 10px 16px !important; }
-    .lp-nav-actions { margin-right: 0 !important; }
+    .lp-nav-container { padding: 8px 12px !important; gap: 8px !important; }
+    .lp-nav-actions { margin-right: 0 !important; gap: 4px !important; flex-shrink: 0 !important; }
+    .lp-nav-signin { padding: 4px 6px !important; font-size: 0.74rem !important; }
+    .lp-nav-getstarted { padding: 5px 9px !important; font-size: 0.74rem !important; border-radius: 8px !important; }
     .lp-step-grid { grid-template-columns: 1fr !important; }
     .lp-hero-h1,
     .lp-h2 { font-size: 1.3rem !important; letter-spacing: -0.5px !important; line-height: 1.25 !important; }
@@ -408,7 +413,7 @@ const GLOBAL_CSS = `
 /* ─── Logo Component ─────────────────────────────────────────────────────*/
 function Logo({ size = 34 }: { size?: number }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
       <div style={{
         width: size, height: size, borderRadius: '50%',
         borderTopWidth: Math.round(size * 0.11), borderTopStyle: 'solid', borderTopColor: '#f97316',
@@ -430,12 +435,12 @@ function Logo({ size = 34 }: { size?: number }) {
         }} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-        <div style={{ fontSize: size * 0.62, fontWeight: 900, letterSpacing: '-0.5px' }}>
+        <div style={{ fontSize: size * 0.62, fontWeight: 900, letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
           <span style={{ color: '#f97316' }}>Agent</span>
           <span style={{ color: '#fff' }}>Clamp</span>
         </div>
         {size >= 28 && (
-          <div style={{ fontSize: size * 0.27, color: '#e5e7eb', fontWeight: 600, letterSpacing: '0.5px' }}>
+          <div className="lp-hide-mobile" style={{ fontSize: size * 0.27, color: '#e5e7eb', fontWeight: 600, letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
             Govern with Confidence
           </div>
         )}
@@ -941,8 +946,8 @@ export default function LandingPage() {
               ))}
             </nav>
             <div className="lp-nav-actions">
-              <button onClick={() => setAuthModal('login')} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: '8px 12px', transition: 'color 0.2s', fontFamily: 'inherit' }} onMouseEnter={e => e.currentTarget.style.color='#fff'} onMouseLeave={e => e.currentTarget.style.color='#9ca3af'}>Sign In</button>
-              <button className="lp-btn-primary" onClick={() => setAuthModal('signup')} style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: 10 }}>Get Started →</button>
+              <button onClick={() => setAuthModal('login')} className="lp-nav-signin" style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: '6px 10px', transition: 'color 0.2s', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }} onMouseEnter={e => e.currentTarget.style.color='#fff'} onMouseLeave={e => e.currentTarget.style.color='#9ca3af'}>Sign In</button>
+              <button className="lp-btn-primary lp-nav-getstarted" onClick={() => setAuthModal('signup')} style={{ padding: '7px 14px', fontSize: '0.82rem', borderRadius: 10, whiteSpace: 'nowrap', flexShrink: 0 }}>Get Started →</button>
             </div>
           </div>
         </header>
