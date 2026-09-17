@@ -247,7 +247,7 @@ const GLOBAL_CSS = `
   }
   .lp-hero-h1,
   .lp-h2 {
-    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
     font-size: clamp(1.3rem, 2.8vw, 2.1rem);
     font-weight: 800;
     letter-spacing: -0.035em;
@@ -931,7 +931,7 @@ export default function LandingPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
-      <div style={{ minHeight: '100vh', background: '#07070a', color: '#f8fafc', fontFamily: "var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif", overflowX: 'hidden', position: 'relative' }}>
+      <div style={{ minHeight: '100vh', background: '#07070a', color: '#f8fafc', fontFamily: "var(--font-sans), 'Inter', system-ui, sans-serif", overflowX: 'hidden', position: 'relative' }}>
 
         {/* ── AMBIENT BLOBS ─────────────────────────────────────────── */}
         <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
