@@ -1,12 +1,12 @@
-const API_BASE = typeof window !== 'undefined' 
-  ? `http://${window.location.hostname}:8000` 
-  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+const rawApiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE = rawApiBase.replace(/\/+$/, '')
 
-const WS_BASE = typeof window !== 'undefined'
-  ? `ws://${window.location.hostname}:8000`
-  : (process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000')
+const rawWsBase = process.env.NEXT_PUBLIC_WS_URL || API_BASE.replace(/^http/, 'ws')
+const WS_BASE = rawWsBase.replace(/\/+$/, '')
 
-console.log('[AgentClamp] Dynamic API_BASE:', API_BASE)
+if (typeof window !== 'undefined') {
+  console.log('[AgentClamp] API_BASE:', API_BASE)
+}
 
 async function apiFetch(path: string, options?: RequestInit) {
   const headers: Record<string, string> = { ...(options?.headers as any) }
@@ -37,9 +37,10 @@ async function apiFetch(path: string, options?: RequestInit) {
 // ── Auth ──────────────────────────────────────────────────────
 export const api = {
   auth: {
-    login:  (data: unknown) => apiFetch('/api/v1/auth/login',  { method: 'POST', body: JSON.stringify(data) }),
-    signup: (data: unknown) => apiFetch('/api/v1/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
-    me:     ()              => apiFetch('/api/v1/auth/me'),
+    passcode: (passcode: string) => apiFetch('/api/v1/auth/passcode', { method: 'POST', body: JSON.stringify({ passcode }) }),
+    login:    (data: unknown)    => apiFetch('/api/v1/auth/login',    { method: 'POST', body: JSON.stringify(data) }),
+    signup:   (data: unknown)    => apiFetch('/api/v1/auth/signup',   { method: 'POST', body: JSON.stringify(data) }),
+    me:       ()                 => apiFetch('/api/v1/auth/me'),
   },
   admin: {
     listUsers: (adminKey: string) =>

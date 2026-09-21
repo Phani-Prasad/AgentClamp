@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import { setAuth, isAuthenticated } from '@/lib/auth'
 import {
   ShieldCheck, Zap, Bot, BarChart3, Eye, EyeOff,
-  ArrowRight, Lock, Scale, CheckCircle2,
+  ArrowRight, Lock, Scale, CheckCircle2, KeyRound,
 } from 'lucide-react'
 
 /* ─── Design tokens (inline for self-contained auth page) ─────────── */
@@ -21,19 +21,10 @@ const CSS = `
     33%     { transform: translate(30px,-20px) scale(1.04); }
     66%     { transform: translate(-20px,15px) scale(0.97); }
   }
-  @keyframes gradient-pan {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
   @keyframes pulse-ring {
     0%   { box-shadow: 0 0 0 0 rgba(249,115,22,0.35); }
     70%  { box-shadow: 0 0 0 10px rgba(249,115,22,0); }
     100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
-  }
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
   }
 
   .auth-page {
@@ -81,11 +72,11 @@ const CSS = `
     background: none;
     border: none;
     font-family: inherit;
-    font-size: 0.875rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #4b5563;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s;
     border-bottom: 2px solid transparent;
     text-align: center;
   }
@@ -100,21 +91,21 @@ const CSS = `
   }
   .auth-input {
     width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
     padding: 12px 16px;
-    font-size: 0.875rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
     color: #f8fafc;
     font-family: inherit;
+    font-size: 0.875rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .auth-input::placeholder { color: #374151; }
   .auth-input:focus {
     border-color: #f97316;
-    box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+    box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
   }
+  .auth-input::placeholder { color: #374151; }
   .auth-input.has-icon { padding-right: 44px; }
 
   .auth-input-icon {
@@ -129,45 +120,36 @@ const CSS = `
     display: flex;
     align-items: center;
     padding: 0;
-    transition: color 0.2s;
+    transition: color 0.15s;
   }
   .auth-input-icon:hover { color: #9ca3af; }
 
   .auth-btn-primary {
     width: 100%;
-    padding: 13px;
+    padding: 12px 20px;
     background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-    color: #fff;
     border: none;
     border-radius: 10px;
+    color: #ffffff;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 700;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-    box-shadow: 0 4px 20px rgba(249,115,22,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.35);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
   .auth-btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(249,115,22,0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 25px rgba(249,115,22,0.5);
   }
   .auth-btn-primary:active:not(:disabled) { transform: translateY(0); }
   .auth-btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
-  .auth-btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .auth-btn-primary:hover::before { opacity: 1; }
 
   .auth-label {
     font-size: 0.7rem;
@@ -177,16 +159,6 @@ const CSS = `
     color: #4b5563;
     display: block;
     margin-bottom: 8px;
-  }
-
-  .auth-error {
-    padding: 10px 14px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.3);
-    border-radius: 8px;
-    color: #ef4444;
-    font-size: 0.78rem;
-    line-height: 1.5;
   }
 
   .auth-feature-pill {
@@ -204,7 +176,6 @@ const CSS = `
     background: rgba(249,115,22,0.04);
   }
 
-  /* Stat badge */
   .auth-stat {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.07);
@@ -265,7 +236,8 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
 
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const [mode, setMode] = useState<'passcode' | 'login' | 'signup'>('passcode')
+  const [passcode, setPasscode] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -274,7 +246,6 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorType, setErrorType] = useState<'error' | 'pending'>('error')
-  // After signup — show "request submitted" panel
   const [pendingUser, setPendingUser] = useState<{ full_name: string; email: string } | null>(null)
 
   // If already authenticated, skip to app
@@ -291,12 +262,16 @@ function LoginForm() {
     setErrorType('error')
 
     try {
-      const data = mode === 'login'
-        ? await api.auth.login({ email, password })
-        : await api.auth.signup({ full_name: name, email, password })
+      let data: any
+      if (mode === 'passcode') {
+        data = await api.auth.passcode(passcode)
+      } else if (mode === 'login') {
+        data = await api.auth.login({ email, password })
+      } else {
+        data = await api.auth.signup({ full_name: name, email, password })
+      }
 
       if (mode === 'signup' && data.status === 'pending') {
-        // Show "request submitted" success panel — no redirect
         setPendingUser(data.user)
         setLoading(false)
         return
@@ -320,10 +295,11 @@ function LoginForm() {
     }
   }
 
-  const switchMode = (next: 'login' | 'signup') => {
+  const switchMode = (next: 'passcode' | 'login' | 'signup') => {
     setMode(next)
     setError(null)
     setPendingUser(null)
+    setPasscode('')
     setEmail('')
     setPassword('')
     setName('')
@@ -355,42 +331,12 @@ function LoginForm() {
           received and is pending administrator review.
         </p>
 
-        {/* Status timeline */}
-        <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
-          {[
-            { done: true,  label: 'Request submitted',         sub: 'Your details have been recorded' },
-            { done: false, label: 'Admin review',              sub: 'An administrator will review your request' },
-            { done: false, label: 'Access granted',            sub: 'You\'ll be able to sign in once approved' },
-          ].map((step, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{
-                width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                background: step.done ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
-                border: `1.5px solid ${step.done ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginTop: 2,
-              }}>
-                {step.done
-                  ? <CheckCircle2 size={13} color="#22c55e" />
-                  : <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'block' }} />
-                }
-              </div>
-              <div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: step.done ? '#f8fafc' : '#6b7280' }}>
-                  {step.label}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: 2 }}>{step.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
         <button
           className="auth-btn-primary"
-          onClick={() => switchMode('login')}
+          onClick={() => switchMode('passcode')}
           style={{ marginBottom: 12 }}
         >
-          Back to Sign In <ArrowRight size={16} />
+          Enter Passcode Instead <ArrowRight size={16} />
         </button>
       </div>
     )
@@ -404,26 +350,47 @@ function LoginForm() {
       </div>
 
       {/* Heading */}
-      <h1 style={{ fontSize: '1.55rem', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: 4 }}>
-        {mode === 'login' ? 'Welcome back' : 'Request Access'}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+        <span style={{
+          fontSize: '0.7rem',
+          fontWeight: 700,
+          background: 'rgba(249,115,22,0.12)',
+          color: '#f97316',
+          border: '1px solid rgba(249,115,22,0.3)',
+          padding: '2px 8px',
+          borderRadius: 6,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px'
+        }}>
+          Private Access
+        </span>
+      </div>
+
+      <h1 style={{ fontSize: '1.55rem', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: 6 }}>
+        {mode === 'passcode' ? 'Unlock Workspace' : mode === 'login' ? 'Account Sign In' : 'Request Access'}
       </h1>
-      <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: 28 }}>
-        {mode === 'login'
-          ? 'Sign in to your AgentClamp workspace.'
-          : 'Submit your details — an admin will review and approve your access.'}
+      <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: 24 }}>
+        {mode === 'passcode'
+          ? 'Enter your authorized workspace passcode to access the platform.'
+          : mode === 'login'
+          ? 'Sign in with your email and password.'
+          : 'Submit your details for workspace approval.'}
       </p>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 28, gap: 4 }}>
+      {/* Mode Tabs */}
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 24, gap: 4 }}>
+        <button className={`auth-tab ${mode === 'passcode' ? 'active' : ''}`} onClick={() => switchMode('passcode')}>
+          Access Passcode
+        </button>
         <button className={`auth-tab ${mode === 'login' ? 'active' : ''}`} onClick={() => switchMode('login')}>
-          Sign In
+          Email Sign In
         </button>
         <button className={`auth-tab ${mode === 'signup' ? 'active' : ''}`} onClick={() => switchMode('signup')}>
           Request Access
         </button>
       </div>
 
-      {/* Error / Pending notice */}
+      {/* Error / Notice */}
       {error && (
         <div style={{
           padding: '12px 14px',
@@ -447,6 +414,41 @@ function LoginForm() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        
+        {/* Passcode Mode */}
+        {mode === 'passcode' && (
+          <div>
+            <label className="auth-label">Workspace Access Key</label>
+            <div className="auth-input-wrap">
+              <input
+                className="auth-input has-icon"
+                type={showPass ? 'text' : 'password'}
+                required
+                placeholder="Enter workspace key (e.g. agentclamp-2026)"
+                value={passcode}
+                onChange={e => setPasscode(e.target.value)}
+                autoFocus
+                autoComplete="off"
+              />
+              <button
+                type="button"
+                className="auth-input-icon"
+                onClick={() => setShowPass(p => !p)}
+                tabIndex={-1}
+              >
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+              <KeyRound size={12} color="#f97316" />
+              <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                Only authorized individuals with the secret key can access this portal.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Signup Mode */}
         {mode === 'signup' && (
           <div>
             <label className="auth-label">Full Name</label>
@@ -462,53 +464,47 @@ function LoginForm() {
           </div>
         )}
 
-        <div>
-          <label className="auth-label">Email Address</label>
-          <input
-            className="auth-input"
-            type="email"
-            required
-            placeholder="operator@company.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-        </div>
+        {/* Email/Password for Login & Signup */}
+        {mode !== 'passcode' && (
+          <>
+            <div>
+              <label className="auth-label">Email Address</label>
+              <input
+                className="auth-input"
+                type="email"
+                required
+                placeholder="operator@company.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
 
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <label className="auth-label" style={{ margin: 0 }}>Password</label>
-            {mode === 'login' && (
-              <span style={{ fontSize: '0.72rem', color: '#f97316', cursor: 'pointer', fontWeight: 600 }}>
-                Forgot password?
-              </span>
-            )}
-          </div>
-          <div className="auth-input-wrap">
-            <input
-              className="auth-input has-icon"
-              type={showPass ? 'text' : 'password'}
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              minLength={mode === 'signup' ? 8 : undefined}
-            />
-            <button
-              type="button"
-              className="auth-input-icon"
-              onClick={() => setShowPass(p => !p)}
-              tabIndex={-1}
-              aria-label={showPass ? 'Hide password' : 'Show password'}
-            >
-              {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-          {mode === 'signup' && (
-            <p style={{ fontSize: '0.68rem', color: '#374151', marginTop: 6 }}>Minimum 8 characters</p>
-          )}
-        </div>
+            <div>
+              <label className="auth-label">Password</label>
+              <div className="auth-input-wrap">
+                <input
+                  className="auth-input has-icon"
+                  type={showPass ? 'text' : 'password'}
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  minLength={mode === 'signup' ? 8 : undefined}
+                />
+                <button
+                  type="button"
+                  className="auth-input-icon"
+                  onClick={() => setShowPass(p => !p)}
+                  tabIndex={-1}
+                >
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         {mode === 'signup' && (
           <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: '0.78rem', color: '#6b7280', cursor: 'pointer' }}>
@@ -521,7 +517,7 @@ function LoginForm() {
             />
             <span>
               I agree to the{' '}
-              <span style={{ color: '#f97316', cursor: 'pointer' }}>Terms of Service</span>
+              <span style={{ color: '#f97316' }}>Terms of Service</span>
               {' '}and automated safety audit logging.
             </span>
           </label>
@@ -535,39 +531,22 @@ function LoginForm() {
                 border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff',
                 animation: 'spin 0.7s linear infinite', display: 'inline-block', flexShrink: 0,
               }} />
-              {mode === 'login' ? 'Signing In…' : 'Submitting Request…'}
+              Verifying Access…
             </>
           ) : (
             <>
-              {mode === 'login' ? 'Sign In' : 'Submit Access Request'}
+              {mode === 'passcode' ? 'Unlock Workspace' : mode === 'login' ? 'Sign In' : 'Submit Access Request'}
               <ArrowRight size={16} />
             </>
           )}
         </button>
       </form>
 
-      {/* Switch mode */}
-      <p style={{ textAlign: 'center', marginTop: 24, fontSize: '0.8rem', color: '#6b7280' }}>
-        {mode === 'login' ? (
-          <>Need access?{' '}
-            <span onClick={() => switchMode('signup')} style={{ color: '#f97316', cursor: 'pointer', fontWeight: 700 }}>
-              Request account
-            </span>
-          </>
-        ) : (
-          <>Already have access?{' '}
-            <span onClick={() => switchMode('login')} style={{ color: '#f97316', cursor: 'pointer', fontWeight: 700 }}>
-              Sign in
-            </span>
-          </>
-        )}
-      </p>
-
       {/* Footer note */}
       <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
         <Lock size={12} color="#374151" />
         <span style={{ fontSize: '0.72rem', color: '#374151' }}>
-          End-to-end encrypted · SOC 2 Type II
+          Zero-trust authenticated session · 256-bit encryption
         </span>
       </div>
     </div>
@@ -598,103 +577,68 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Headline */}
-          <div style={{ marginBottom: 32 }}>
-            <span style={{
-              fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-              letterSpacing: '1.4px', color: '#f97316', display: 'block', marginBottom: 10,
+          {/* Hero text */}
+          <div style={{ maxWidth: 440, marginBottom: 36 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '4px 12px', borderRadius: 20,
+              background: 'rgba(249,115,22,0.08)',
+              border: '1px solid rgba(249,115,22,0.2)',
+              fontSize: '0.72rem', fontWeight: 700, color: '#f97316',
+              marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.8px',
             }}>
-              Enterprise AI Governance
-            </span>
+              <Zap size={11} /> Enterprise AI Security
+            </div>
             <h2 style={{
-              fontSize: 'clamp(1.6rem, 2.8vw, 2.4rem)',
-              fontWeight: 900,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.15,
-              marginBottom: 12,
+              fontSize: '2rem', fontWeight: 900, lineHeight: 1.2,
+              letterSpacing: '-1px', color: '#f8fafc', marginBottom: 12,
             }}>
-              Orchestrate, Observe &{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #06b6d4 100%)',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                animation: 'gradient-pan 4s linear infinite',
-                display: 'inline-block',
-              }}>
-                Govern AI Agents
-              </span>{' '}
-              with Confidence
+              Enterprise-Grade AI Guardrails & Governance.
             </h2>
-            <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, maxWidth: 440 }}>
-              The enterprise control plane for multi-agent AI workflows — real-time guardrails,
-              compliance monitoring, and deep observability in one platform.
+            <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.65 }}>
+              Protect LLM workflows against prompt injections, PII leakage, and compliance breaches in real time.
             </p>
           </div>
 
-          {/* Stats row */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
-            {STATS.map(s => (
-              <div key={s.label} className="auth-stat">
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f97316', letterSpacing: '-0.5px' }}>
-                  {s.value}
-                </div>
-                <div style={{ fontSize: '0.65rem', color: '#6b7280', marginTop: 2, fontWeight: 600 }}>
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Feature pills */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 460 }}>
-            {FEATURES.map(f => (
-              <div key={f.label} className="auth-feature-pill">
+          {/* Feature list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 440, marginBottom: 36 }}>
+            {FEATURES.map((f, i) => (
+              <div key={i} className="auth-feature-pill">
                 <div style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  background: 'rgba(249,115,22,0.1)',
-                  border: '1px solid rgba(249,115,22,0.2)',
+                  width: 30, height: 30, borderRadius: 8,
+                  background: 'rgba(255,255,255,0.04)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                 }}>
                   {f.icon}
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f8fafc' }}>{f.label}</div>
-                  <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: 1 }}>{f.sub}</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#e2e8f0' }}>{f.label}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{f.sub}</div>
                 </div>
-                <CheckCircle2 size={14} color="#22c55e" style={{ marginLeft: 'auto', flexShrink: 0 }} />
               </div>
             ))}
           </div>
 
-          {/* Bottom badge */}
-          <div style={{ marginTop: 36, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ display: 'flex', gap: -6 }}>
-              {['#f97316','#06b6d4','#a855f7','#22c55e'].map((c, i) => (
-                <div key={c} style={{
-                  width: 24, height: 24, borderRadius: '50%', background: c,
-                  border: '2px solid #050508', marginLeft: i === 0 ? 0 : -8,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.55rem', color: '#fff', fontWeight: 800,
-                }}>
-                  {['AI','🔒','📊','✓'][i]}
+          {/* Stats row */}
+          <div style={{ display: 'flex', gap: 10, maxWidth: 440 }}>
+            {STATS.map((s, i) => (
+              <div key={i} className="auth-stat">
+                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#f97316', letterSpacing: '-0.5px' }}>
+                  {s.value}
                 </div>
-              ))}
-            </div>
-            <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
-              Trusted by security-conscious teams building enterprise AI
-            </span>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2, fontWeight: 500 }}>
+                  {s.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* ── Right form panel ────────────────────────────────── */}
+        {/* ── Right form panel ────────────────────── */}
         <div className="auth-right" style={{ zIndex: 1 }}>
           <Suspense fallback={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', border: '3px solid rgba(249,115,22,0.3)', borderTopColor: '#f97316', animation: 'spin 0.8s linear infinite' }} />
-            </div>
+            <div style={{ color: '#4b5563', fontSize: '0.8rem' }}>Loading workspace access…</div>
           }>
             <LoginForm />
           </Suspense>
