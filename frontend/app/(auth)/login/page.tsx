@@ -285,7 +285,10 @@ function LoginForm() {
     } catch (err: any) {
       setLoading(false)
       const msg: string = err.message || 'Authentication failed.'
-      if (msg.startsWith('PENDING_APPROVAL:')) {
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+        setErrorType('pending')
+        setError('Connecting to backend (server may be waking up)... Please wait 15 seconds and try again.')
+      } else if (msg.startsWith('PENDING_APPROVAL:')) {
         setErrorType('pending')
         setError(msg.replace('PENDING_APPROVAL: ', ''))
       } else {

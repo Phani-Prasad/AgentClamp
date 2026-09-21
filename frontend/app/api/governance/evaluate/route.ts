@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Next.js API Route - Governance Eval Proxy
  *
  * Forwards eval requests from the browser to the AgentClamp backend,
@@ -8,7 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 
-const GOVERNANCE_API_URL = process.env.GOVERNANCE_API_URL || 'http://localhost:8000'
+const GOVERNANCE_API_URL = (process.env.GOVERNANCE_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/+$/, '')
 const GOVERNANCE_API_KEY = process.env.GOVERNANCE_API_KEY || ''
 
 export async function POST(req: NextRequest) {

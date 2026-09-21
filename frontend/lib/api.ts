@@ -1,12 +1,10 @@
-const rawApiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-const API_BASE = rawApiBase.replace(/\/+$/, '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '')
 
-const rawWsBase = process.env.NEXT_PUBLIC_WS_URL || API_BASE.replace(/^http/, 'ws')
-const WS_BASE = rawWsBase.replace(/\/+$/, '')
-
-if (typeof window !== 'undefined') {
-  console.log('[AgentClamp] API_BASE:', API_BASE)
-}
+const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || (
+  typeof window !== 'undefined'
+    ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
+    : 'ws://localhost:8000'
+)
 
 async function apiFetch(path: string, options?: RequestInit) {
   const headers: Record<string, string> = { ...(options?.headers as any) }
