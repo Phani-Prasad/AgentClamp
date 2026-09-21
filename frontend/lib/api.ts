@@ -38,9 +38,9 @@ async function apiFetch(path: string, options?: RequestInit) {
 export const api = {
   auth: {
     passcode: (passcode: string) => apiFetch('/api/v1/auth/passcode', { method: 'POST', body: JSON.stringify({ passcode }) }),
-    login:    (data: unknown)    => apiFetch('/api/v1/auth/login',    { method: 'POST', body: JSON.stringify(data) }),
-    signup:   (data: unknown)    => apiFetch('/api/v1/auth/signup',   { method: 'POST', body: JSON.stringify(data) }),
-    me:       ()                 => apiFetch('/api/v1/auth/me'),
+    login: (data: unknown) => apiFetch('/api/v1/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    signup: (data: unknown) => apiFetch('/api/v1/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+    me: () => apiFetch('/api/v1/auth/me'),
   },
   admin: {
     listUsers: (adminKey: string) =>
@@ -53,30 +53,30 @@ export const api = {
       apiFetch(`/api/v1/auth/admin/users/${userId}`, { method: 'DELETE', headers: { 'X-Admin-Key': adminKey } as any }),
   },
   agents: {
-    list: ()                  => apiFetch('/api/v1/agents/'),
-    create: (data: unknown)   => apiFetch('/api/v1/agents/', { method: 'POST', body: JSON.stringify(data) }),
-    get: (id: string)         => apiFetch(`/api/v1/agents/${id}`),
+    list: () => apiFetch('/api/v1/agents/'),
+    create: (data: unknown) => apiFetch('/api/v1/agents/', { method: 'POST', body: JSON.stringify(data) }),
+    get: (id: string) => apiFetch(`/api/v1/agents/${id}`),
     update: (id: string, data: unknown) => apiFetch(`/api/v1/agents/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
-    delete: (id: string)      => fetch(`${API_BASE}/api/v1/agents/${id}`, { method: 'DELETE' }),
+    delete: (id: string) => fetch(`${API_BASE}/api/v1/agents/${id}`, { method: 'DELETE' }),
   },
   runs: {
-    list: (agentId?: string)  => apiFetch(`/api/v1/runs/${agentId ? `?agent_id=${agentId}` : ''}`),
-    get: (id: string)         => apiFetch(`/api/v1/runs/${id}`),
+    list: (agentId?: string) => apiFetch(`/api/v1/runs/${agentId ? `?agent_id=${agentId}` : ''}`),
+    get: (id: string) => apiFetch(`/api/v1/runs/${id}`),
   },
   kbs: {
-    list: ()                  => apiFetch('/api/v1/knowledge-bases/'),
-    create: (data: unknown)   => apiFetch('/api/v1/knowledge-bases/', { method: 'POST', body: JSON.stringify(data) }),
-    delete: (id: string)      => fetch(`${API_BASE}/api/v1/knowledge-bases/${id}`, { method: 'DELETE' }),
+    list: () => apiFetch('/api/v1/knowledge-bases/'),
+    create: (data: unknown) => apiFetch('/api/v1/knowledge-bases/', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: string) => fetch(`${API_BASE}/api/v1/knowledge-bases/${id}`, { method: 'DELETE' }),
     uploadDoc: (kbId: string, file: File) => {
       const fd = new FormData()
       fd.append('file', file)
       return fetch(`${API_BASE}/api/v1/knowledge-bases/${kbId}/documents`, { method: 'POST', body: fd }).then(r => r.json())
     },
-    listDocs: (kbId: string)  => apiFetch(`/api/v1/knowledge-bases/${kbId}/documents`),
+    listDocs: (kbId: string) => apiFetch(`/api/v1/knowledge-bases/${kbId}/documents`),
     deleteDoc: (kbId: string, docId: string) => fetch(`${API_BASE}/api/v1/knowledge-bases/${kbId}/documents/${docId}`, { method: 'DELETE' }),
   },
   providers: {
-    list: ()  => apiFetch('/api/v1/providers/'),
+    list: () => apiFetch('/api/v1/providers/'),
     tools: () => apiFetch('/api/v1/providers/tools'),
     listCustom: () => apiFetch('/api/v1/providers/custom'),
     getCustom: (id: string) => apiFetch(`/api/v1/providers/custom/${id}`),
@@ -94,7 +94,7 @@ export const api = {
   },
   governance: {
     listPending: () => apiFetch('/api/v1/governance/pending'),
-    resolve: (runId: string, data: { action: string; edited_output?: string }) => 
+    resolve: (runId: string, data: { action: string; edited_output?: string }) =>
       apiFetch(`/api/v1/governance/resolve/${runId}`, { method: 'POST', body: JSON.stringify(data) }),
     // Dynamic Policy Builder
     policies: {
@@ -117,11 +117,11 @@ export const api = {
     }) => apiFetch('/v1/orgs/me/evaluate', { method: 'POST', body: JSON.stringify(data) }),
   },
   compliance: {
-    dashboard: ()                          => apiFetch('/api/v1/compliance/dashboard'),
-    frameworks: ()                         => apiFetch('/api/v1/compliance/frameworks'),
-    report: ()                             => apiFetch('/api/v1/compliance/report'),
-    classifyAgent: (data: unknown)         => apiFetch('/api/v1/compliance/classify-agent', { method: 'POST', body: JSON.stringify(data) }),
-    getClassification: (agentId: string)   => apiFetch(`/api/v1/compliance/agents/${agentId}/classification`),
+    dashboard: () => apiFetch('/api/v1/compliance/dashboard'),
+    frameworks: () => apiFetch('/api/v1/compliance/frameworks'),
+    report: () => apiFetch('/api/v1/compliance/report'),
+    classifyAgent: (data: unknown) => apiFetch('/api/v1/compliance/classify-agent', { method: 'POST', body: JSON.stringify(data) }),
+    getClassification: (agentId: string) => apiFetch(`/api/v1/compliance/agents/${agentId}/classification`),
     updateControls: (agentId: string, data: unknown) => apiFetch(`/api/v1/compliance/agents/${agentId}/controls`, { method: 'PATCH', body: JSON.stringify(data) }),
   },
 }
