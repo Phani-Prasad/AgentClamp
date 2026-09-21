@@ -462,6 +462,7 @@ const TICKER = [
 ]
 
 import { api } from '@/lib/api'
+import { setAuth } from '@/lib/auth'
 
 /* ─── INTERACTIVE PLAYGROUND SCENARIOS ───────────────────────────────────*/
 const PLAYGROUND_SCENARIOS = [
@@ -894,11 +895,8 @@ export default function LandingPage() {
         ? await api.auth.login({ email, password })
         : await api.auth.signup({ full_name: name, email, password })
 
-      if (data.access_token) {
-        localStorage.setItem('token', data.access_token)
-      }
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user))
+      if (data.access_token && data.user) {
+        setAuth(data.access_token, data.user)
       }
 
       setLoading(false)
@@ -952,7 +950,9 @@ export default function LandingPage() {
             </nav>
             <div className="lp-nav-actions">
               <button onClick={() => setAuthModal('login')} className="lp-nav-signin" style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: '6px 10px', transition: 'color 0.2s', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }} onMouseEnter={e => e.currentTarget.style.color='#fff'} onMouseLeave={e => e.currentTarget.style.color='#9ca3af'}>Sign In</button>
-              <button className="lp-btn-primary lp-nav-getstarted" onClick={() => setAuthModal('signup')} style={{ padding: '7px 14px', fontSize: '0.82rem', borderRadius: 10, whiteSpace: 'nowrap', flexShrink: 0 }}>Get Started →</button>
+              <Link href="/login" className="lp-btn-primary lp-nav-getstarted" style={{ padding: '7px 16px', fontSize: '0.82rem', borderRadius: 10, whiteSpace: 'nowrap', flexShrink: 0, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                Get Started →
+              </Link>
             </div>
           </div>
         </header>
@@ -990,11 +990,14 @@ export default function LandingPage() {
           </h1>
 
           <p className="fade-up-2 lp-sub" style={{ maxWidth: 620, margin: '0 auto 20px', lineHeight: 1.6 }}>
-            The industrial-grade control plane for multi-agent AI workflows. Enforce real-time guardrails, audit every decision, and deploy with confidence, all in one beautiful command center.
+            The Enterprise control plane for multi-agent AI workflows.<br />
+            Let your AI agents move fast. Keep control at every step.
           </p>
 
           <div className="fade-up-3 lp-hero-btns" style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
-            <button className="lp-btn-primary" onClick={() => setAuthModal('signup')} style={{ fontSize: '0.92rem', padding: '12px 24px' }}>Deploy Free Control Plane →</button>
+            <Link href="/login" className="lp-btn-primary" style={{ fontSize: '0.95rem', padding: '12px 26px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Get Started Free →
+            </Link>
             <button className="lp-btn-ghost" onClick={() => { setDemoModal(true); setDemoSubmitted(false); }} style={{ fontSize: '0.92rem', padding: '12px 24px' }}>Book Enterprise Demo</button>
           </div>
 

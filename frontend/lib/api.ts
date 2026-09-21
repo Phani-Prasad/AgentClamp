@@ -14,6 +14,12 @@ async function apiFetch(path: string, options?: RequestInit) {
     headers['Content-Type'] = 'application/json'
   }
 
+  // Inject JWT token for authenticated requests
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
@@ -28,12 +34,22 @@ async function apiFetch(path: string, options?: RequestInit) {
   return res.json()
 }
 
-// ── Agents ──────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────
 export const api = {
   auth: {
-    login: (data: unknown) => apiFetch('/api/v1/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    login:  (data: unknown) => apiFetch('/api/v1/auth/login',  { method: 'POST', body: JSON.stringify(data) }),
     signup: (data: unknown) => apiFetch('/api/v1/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
-    me: () => apiFetch('/api/v1/auth/me'),
+    me:     ()              => apiFetch('/api/v1/auth/me'),
+  },
+  admin: {
+    listUsers: (adminKey: string) =>
+      apiFetch('/api/v1/auth/admin/users', { headers: { 'X-Admin-Key': adminKey } as any }),
+    approveUser: (userId: string, adminKey: string) =>
+      apiFetch(`/api/v1/auth/admin/users/${userId}/approve`, { method: 'POST', headers: { 'X-Admin-Key': adminKey } as any }),
+    rejectUser: (userId: string, adminKey: string) =>
+      apiFetch(`/api/v1/auth/admin/users/${userId}/reject`, { method: 'POST', headers: { 'X-Admin-Key': adminKey } as any }),
+    deleteUser: (userId: string, adminKey: string) =>
+      apiFetch(`/api/v1/auth/admin/users/${userId}`, { method: 'DELETE', headers: { 'X-Admin-Key': adminKey } as any }),
   },
   agents: {
     list: ()                  => apiFetch('/api/v1/agents/'),

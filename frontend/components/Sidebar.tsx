@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { getUser, logout } from '@/lib/auth'
 
 import { 
   LayoutDashboard, 
@@ -16,7 +16,8 @@ import {
   Cpu, 
   FlaskConical,
   Sliders,
-  Scale
+  Scale,
+  LogOut
 } from 'lucide-react'
 
 const NAV = [
@@ -45,20 +46,8 @@ export default function Sidebar() {
   const [user, setUser] = useState<{ full_name: string; email: string } | null>(null)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('user')
-      if (stored) {
-        setUser(JSON.parse(stored))
-      }
-    } catch (e) {
-      console.error(e)
-    }
+    setUser(getUser())
   }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-  }
 
   const initials = user?.full_name
     ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -102,15 +91,15 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {/* User Profile Badge */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          padding: '10px 12px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
+          padding: '8px 10px',
+          background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: 10
         }}>
           <div style={{
@@ -128,48 +117,54 @@ export default function Sidebar() {
           }}>
             {initials}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f8fafc', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
               {user?.full_name || 'Operator'}
             </span>
-            <span style={{ fontSize: '0.68rem', color: '#6b7280', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
               {user?.email || 'operator@agentclamp.io'}
             </span>
           </div>
         </div>
 
-        <Link 
-          href="/" 
-          onClick={handleLogout}
+        {/* Visible Logout Button */}
+        <button
+          onClick={() => logout()}
+          type="button"
           style={{ 
             display: 'flex', 
             alignItems: 'center', 
+            justifyContent: 'center',
             gap: 8, 
-            color: '#ef4444', 
-            textDecoration: 'none', 
+            color: '#f87171', 
             fontSize: '0.85rem', 
             fontWeight: 600, 
-            padding: '8px 12px', 
+            padding: '9px 12px', 
             borderRadius: 8, 
-            background: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            transition: 'all 0.2s'
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            cursor: 'pointer',
+            width: '100%',
+            transition: 'all 0.2s',
+            fontFamily: 'inherit'
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(239, 68, 68, 0.16)';
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            e.currentTarget.style.color = '#ffffff';
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(239, 68, 68, 0.08)';
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+            e.currentTarget.style.color = '#f87171';
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Log Out
-        </Link>
-        <div className="sidebar-version">AgentClamp v0.1 · Open Source</div>
+          <LogOut size={16} />
+          <span>Log Out</span>
+        </button>
+        <div className="sidebar-version" style={{ fontSize: '0.68rem', color: '#64748b', textAlign: 'center' }}>
+          AgentClamp v0.1 · Open Source
+        </div>
       </div>
     </aside>
   )

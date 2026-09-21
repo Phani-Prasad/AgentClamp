@@ -28,6 +28,8 @@ class User(Base):
     full_name       = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     is_active       = Column(Boolean, default=True)
+    is_approved     = Column(Boolean, default=False)   # Must be True to login
+    role            = Column(String(50), default="user")  # "user" | "admin"
     created_at      = Column(DateTime, default=datetime.utcnow)
 
 
